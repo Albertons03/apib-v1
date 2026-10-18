@@ -188,7 +188,13 @@ npm run dev
 
 ## Screenshots
 
-_Dashboard screenshot coming soon._
+### Dashboard overview
+
+![APIB V1 AI Trading Dashboard overview](public/screenshots/dashboard-cover.png)
+
+### Full dashboard
+
+![APIB V1 full dashboard showing trade setup, AI analysis, derivatives and news](public/screenshots/dashboard-full.png)
 
 ## Disclaimer
 
