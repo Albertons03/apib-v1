@@ -5,7 +5,6 @@ import { PriceCard } from "@/components/trading/PriceCard";
 import { TradeSetupCard } from "@/components/trading/TradeSetupCard";
 import { AgentAnalysisGrid } from "@/components/trading/AgentAnalysisGrid";
 import { NewsSection } from "@/components/trading/NewsSection";
-import { MarketDecision } from "@/lib/decision/types";
 
 // const mockLongReady: MarketDecision = {
 //   bias: "LONG",

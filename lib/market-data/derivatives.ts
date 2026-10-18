@@ -146,14 +146,46 @@ export async function fetchOpenInterestHistory(
     );
   }
 
-  const data = await response.json();
+  const data: unknown = await response.json();
 
- const history: OpenInterestHistoryPoint[] = data.map((item: any) => ({
-  openInterest: Number(item.sumOpenInterest),
-  timestamp: item.timestamp,
-}));
+  if (!Array.isArray(data) || !data.every(isBinanceOpenInterestHistItem)) {
+    throw new Error("Unexpected OI history response shape");
+  }
 
-return history;
+  const history: OpenInterestHistoryPoint[] = data.map((item) => ({
+    openInterest: Number(item.sumOpenInterest),
+    timestamp: item.timestamp,
+  }));
+
+  return history;
+}
+
+type BinanceOpenInterestHistItem = {
+  sumOpenInterest: string | number;
+  timestamp: number;
+};
+
+function isBinanceOpenInterestHistItem(
+  value: unknown
+): value is BinanceOpenInterestHistItem {
+  if (typeof value !== "object" || value === null) return false;
+  const item = value as Record<string, unknown>;
+  return (
+    (typeof item.sumOpenInterest === "string" ||
+      typeof item.sumOpenInterest === "number") &&
+    typeof item.timestamp === "number"
+  );
+}
+
+// Binance kline tuple: [openTime, open, high, low, close, ...]
+type BinanceKline = [number, ...(string | number)[]];
+
+function isBinanceKline(value: unknown): value is BinanceKline {
+  return (
+    Array.isArray(value) &&
+    typeof value[0] === "number" &&
+    (typeof value[4] === "string" || typeof value[4] === "number")
+  );
 }
 
 //////////////////////////////////////////////////////////
@@ -173,11 +205,15 @@ export async function fetchPriceHistory(
     );
   }
 
-  const data = await response.json();
+  const data: unknown = await response.json();
+
+  if (!Array.isArray(data) || !data.every(isBinanceKline)) {
+    throw new Error("Unexpected klines response shape");
+  }
 
   const closedCandles = data.slice(0, -1);
 
-const history: PriceHistoryPoint[] = closedCandles.map((candle: any[]) => ({
+const history: PriceHistoryPoint[] = closedCandles.map((candle) => ({
   price: Number(candle[4]),
   timestamp: candle[0],
 }));
